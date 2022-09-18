@@ -1,23 +1,28 @@
 #!/usr/bin/env node
 
-const optimist = require('optimist')
-
 const globals = require('../globals.js')
 
-let argv = optimist
-    .demand(1)
-    .options('o', { alias : ['out', 'dest'], default: globals.DEFAULT_OUTPUT_FILE, describe: 'Output file' })
-    .options('p', { boolean: true, alias : ['print'], describe: 'Print the final bundled output to stdout' })
-    .options('disable-beautify', { boolean: true, describe: 'Leave the concatenated files as-is (might be ugly!)' })
-    .usage(
-        '\n' +
-        'Usage: bundle-js ./path/to/entryfile.js [-o ./path/to/outputfile] [-p]\n' +     // 80 character line width limit here
-        '       [--disable-beautify]'
-    )
-    .argv
+function showHelp() {
+    console.log(`Usage: bundle-js ./path/to/entryfile.js [-o ./path/to/outputfile] [-p]
+       [--disable-beautify]
+
+Options:
+  -o, --out, --dest   Output file                                          [default: "./bundlejs/output.js"]
+  -p, --print         Print the final bundled output to stdout
+  --disable-beautify  Leave the concatenated files as-is (might be ugly!)
+    `);
+}
+
+let argv = require('minimist')(process.argv.slice(2));
+
+if (argv._.length < 1) {
+    showHelp();
+    console.log('Not enough non-option arguments: got 0, need at least 1');
+    process.exit()
+}
 
 if (argv._[0] == 'help') {
-    optimist.showHelp()
+    showHelp();
     process.exit()
 }
 
